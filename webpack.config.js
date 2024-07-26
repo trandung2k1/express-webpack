@@ -4,6 +4,8 @@ const Dotenv = require('dotenv-webpack');
 const CompressionPlugin = require('compression-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const webpack = require('webpack');
+const TerserPlugin = require('terser-webpack-plugin');
+const nodeExternals = require('webpack-node-externals');
 module.exports = (env, argv) => {
     const isProduction = argv.mode === 'production';
     const config = {
@@ -22,6 +24,8 @@ module.exports = (env, argv) => {
             path: path.resolve(__dirname, 'dist'),
             clean: true,
         },
+        externalsPresets: { node: true },
+        externals: [{ mongoose: 'commonjs mongoose' }],
         devtool: isProduction ? false : 'inline-source-map',
         mode: isProduction ? 'production' : 'development',
         watch: isProduction ? false : true,
@@ -39,6 +43,9 @@ module.exports = (env, argv) => {
 
         optimization: isProduction
             ? {
+                  minimize: true,
+                  minimizer: [new TerserPlugin({ parallel: true })],
+                  removeAvailableModules: true,
                   splitChunks: {
                       chunks: 'all',
                   },
