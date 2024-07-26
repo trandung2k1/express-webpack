@@ -1,5 +1,6 @@
 const express = require('express');
 const port = process.env.PORT;
+require('./configs/db');
 const app = express();
 
 app.get('/', (req, res) => {
